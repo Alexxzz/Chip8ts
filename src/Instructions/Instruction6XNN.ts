@@ -1,14 +1,19 @@
-import { IVMState } from '../Chip8';
-import { InstructionWithXNNOperands } from './Base/InstructionWithXNNOperands';
-import { Opcode } from './Opcode';
+import { IVMState } from '../VM/IVMState';
+import { getRegisterByIndex } from '../VM/Registers';
+import { Instruction } from './Base/Instruction';
 
-export class Instruction6XNN extends InstructionWithXNNOperands {
-  public readonly opcode: Opcode._6XNN = Opcode._6XNN;
-
+export class Instruction6XNN extends Instruction {
   public perform(vmState: IVMState): IVMState {
+    const registerIndex = this.getX();
+    const register = getRegisterByIndex(registerIndex);
+
+    const value = this.getNN();
+
+    this.log(`put 0x${value.toString(16)} to ${register}`);
+
     return {
       ...vmState,
-      V0: this.NN,
+      [register]: value,
     };
   }
 }
