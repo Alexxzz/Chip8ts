@@ -1,11 +1,11 @@
-import { IVMState } from '../VM/IVMState';
+import { Register } from '../VM/Register';
+import { VMState } from '../VM/VMState';
 import { Instruction } from './Base/Instruction';
 
 export class InstructionANNN extends Instruction {
-  public perform(vmState: IVMState): IVMState {
-    return {
-      ...vmState,
-      I: this.getNNN(),
-    };
+  public perform(vmState: VMState): VMState {
+    vmState.setRegister(Register.I, this.getNNN().numberValue());
+
+    return vmState;
   }
 }

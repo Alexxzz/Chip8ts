@@ -1,15 +1,15 @@
 import { instructionFactory } from './Instructions/Instructions';
-import { IVMState, NullVMState } from './VM/IVMState';
+import { VMState } from './VM/VMState';
 
 export class Chip8 {
-  private vmState: IVMState = NullVMState;
+  private vmState = new VMState();
 
-  public run(program: string[]): IVMState {
+  public run(program: string[]): VMState {
     for (const stringInstruction of program) {
       const instruction = instructionFactory(stringInstruction);
       this.vmState = instruction.perform(this.vmState);
     }
 
-    return this.vmState;
+    return new VMState(this.vmState);
   }
 }

@@ -1,19 +1,17 @@
-import { IVMState } from '../VM/IVMState';
-import { getRegisterByIndex } from '../VM/Registers';
+import { getRegisterByIndex } from '../VM/Register';
+import { VMState } from '../VM/VMState';
 import { Instruction } from './Base/Instruction';
 
 export class Instruction6XNN extends Instruction {
-  public perform(vmState: IVMState): IVMState {
+  public perform(vmState: VMState): VMState {
     const registerIndex = this.getX();
-    const register = getRegisterByIndex(registerIndex);
+    const register = getRegisterByIndex(registerIndex.numberValue());
 
     const value = this.getNN();
 
-    this.log(`put 0x${value.toString(16)} to ${register}`);
+    this.log(`put ${value} to ${register}`);
 
-    return {
-      ...vmState,
-      [register]: value,
-    };
+    vmState.setRegister(register, value.numberValue());
+    return vmState;
   }
 }

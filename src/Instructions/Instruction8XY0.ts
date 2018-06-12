@@ -1,22 +1,21 @@
-import { IVMState } from '../VM/IVMState';
-import { getRegisterByIndex } from '../VM/Registers';
+import { getRegisterByIndex } from '../VM/Register';
+import { VMState } from '../VM/VMState';
 import { Instruction } from './Base/Instruction';
 
 export class Instruction8XY0 extends Instruction {
-  public perform(vmState: IVMState): IVMState {
+  public perform(vmState: VMState): VMState {
     const toRegisterIndex = this.getX();
-    const toRegister = getRegisterByIndex(toRegisterIndex);
+    const toRegister = getRegisterByIndex(toRegisterIndex.numberValue());
 
     const fromRegisterIndex = this.getY();
-    const fromRegister = getRegisterByIndex(fromRegisterIndex);
+    const fromRegister = getRegisterByIndex(fromRegisterIndex.numberValue());
 
-    const fromValue = vmState[fromRegister];
+    const fromValue = vmState.getRegister(fromRegister);
 
     this.log(`copy 0x${fromValue.toString(16)} from ${fromRegister} to ${toRegister}`);
 
-    return {
-      ...vmState,
-      [toRegister]: fromValue,
-    };
+    vmState.setRegister(toRegister, fromValue);
+
+    return vmState;
   }
 }

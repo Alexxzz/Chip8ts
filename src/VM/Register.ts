@@ -1,4 +1,4 @@
-export enum Registers {
+export enum Register {
   V0 = 'V0',
   V1 = 'V1',
   V2 = 'V2',
@@ -15,7 +15,9 @@ export enum Registers {
   VD = 'VD',
   VE = 'VE',
   VF = 'VF',
+
+  I = 'I',
 }
 
-export const getRegisterByIndex = (index: number): Registers =>
-  Object.keys(Registers)[index] as Registers;
+export const getRegisterByIndex = (index: number): Register =>
+  Object.keys(Register)[index] as Register;

@@ -6,7 +6,8 @@
     "jsRules": {},
     "rules": {
         "quotemark": ["single"],
-        "no-bitwise": false
+        "no-bitwise": false,
+        "arrow-parens": ["ban-single-arg-parens"]
     },
     "rulesDirectory": []
 }
