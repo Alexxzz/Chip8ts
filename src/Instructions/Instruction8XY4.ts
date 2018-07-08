@@ -1,4 +1,4 @@
-import { getRegisterByIndex } from '../VM/Register';
+import { getRegisterByIndex, Register } from '../VM/Register';
 import { VMState } from '../VM/VMState';
 import { Instruction } from './Base/Instruction';
 
@@ -12,11 +12,14 @@ export class Instruction8XY4 extends Instruction {
     const toRegister = getRegisterByIndex(toRegisterIndex.numberValue());
     const toRegisterValue = vmState.getRegister(toRegister);
 
-    const result = fromRegisterValue + toRegisterValue;
+    const result = (fromRegisterValue + toRegisterValue) % 256;
+    const leftover = (fromRegisterValue + toRegisterValue) / 256 > 1;
+
     vmState.setRegister(toRegister, result);
+    vmState.setRegister(Register.VF, Number(leftover));
 
     this.log(
-      `add value of ${fromRegister}:${fromRegisterValue} to value of ${toRegister}:${toRegisterValue} = ${result}`
+      `add value of ${fromRegister}:${fromRegisterValue} to value of ${toRegister}:${toRegisterValue} = ${result}`,
     );
 
     return vmState;

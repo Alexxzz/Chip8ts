@@ -118,14 +118,94 @@ describe('Chip8', () => {
       });
 
       it('Set VF to 01 if a carry occurs', () => {
+        const program = [
+          writeValueToRegister('42', Register.V3), // write to V3 value 0xff
+          writeValueToRegister('ff', Register.VE), // write to VE value 0x42
+          '83E4', // add value of VE to value of V3
+        ];
 
+        const vmState = sut.run(program);
+
+        expect(vmState.getRegister(Register.VF)).toEqual(0x1);
+        expect(vmState.getRegister(Register.V3)).toEqual(0x41);
       });
 
       it('Set VF to 00 if a carry does not occur', () => {
+        const program = [
+          writeValueToRegister('01', Register.VF), // preset VF to 0x1
 
+          writeValueToRegister('15', Register.VA), // write to VA value 0x15
+          writeValueToRegister('23', Register.VD), // write to VD value 0x23
+          '8DA4', // add value of VA to value of VD
+        ];
+
+        const vmState = sut.run(program);
+
+        expect(vmState.getRegister(Register.VF)).toEqual(0);
+      });
+    });
+
+    describe('8XY5: Subtract the value of register VY from register VX', () => {
+      it('subtracts VA from VB and sets to VB', () => {
+        const program = [
+          writeValueToRegister('05', Register.VA), // write to VA value 0x15
+          writeValueToRegister('0a', Register.VB), // write to VD value 0x23
+          '8BA5', // subtract value of VA from VB
+        ];
+
+        const vmState = sut.run(program);
+
+        expect(vmState.getRegister(Register.VB)).toEqual(0x5);
+      });
+
+      it('Set VF to 00 if a borrow occurs', () => {
+        const program = [
+          writeValueToRegister('01', Register.VF),
+          writeValueToRegister('0a', Register.VA),
+          writeValueToRegister('05', Register.VB),
+          '8BA5',
+        ];
+
+        const vmState = sut.run(program);
+
+        expect(vmState.getRegister(Register.VB)).toEqual(0x5);
+        expect(vmState.getRegister(Register.VF)).toEqual(0x0);
+      });
+
+      it('Set VF to 01 if a borrow does not occur', () => {
+        const program = [
+          writeValueToRegister('00', Register.VF),
+          writeValueToRegister('03', Register.VA),
+          writeValueToRegister('03', Register.VB),
+          '8BA5',
+        ];
+
+        const vmState = sut.run(program);
+
+        expect(vmState.getRegister(Register.VB)).toEqual(0x0);
+        expect(vmState.getRegister(Register.VF)).toEqual(0x1);
+      });
+    });
+
+    describe('8XY7: Set register VX to the value of VY minus VX', () => {
+      it('sets VC to value VD minus VC', () => {
+        const program = [
+          writeValueToRegister('05', Register.VC),
+          writeValueToRegister('0f', Register.VD),
+          '8CD7',
+        ];
+
+        const vmState = sut.run(program);
+
+        expect(vmState.getRegister(Register.VC)).toEqual(0xa);
       });
     });
   });
 });
 
-const writeValueToRegister = (value: string, register: Register) => `6${register.substring(1)}${value}`;
+const writeValueToRegister = (value: string, register: Register) => {
+  if (value.length !== 2) {
+    fail('value should be length of 2');
+  }
+  return `6${register.substring(1)}${value}`;
+};
