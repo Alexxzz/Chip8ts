@@ -7,6 +7,8 @@ export enum Opcode {
 
 export enum SubOpcode8XY_ {
   _8XY0 = 0,
+  _8XY2 = 2,
   _8XY4 = 4,
   _8XY5 = 5,
+  _8XY7 = 7,
 }

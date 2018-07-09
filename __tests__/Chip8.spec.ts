@@ -146,7 +146,7 @@ describe('Chip8', () => {
     });
 
     describe('8XY5: Subtract the value of register VY from register VX', () => {
-      it('subtracts VA from VB and sets to VB', () => {
+      it('subtracts VA(Vy) from VB(Vx) and sets to VB(Vx)', () => {
         const program = [
           writeValueToRegister('05', Register.VA), // write to VA value 0x15
           writeValueToRegister('0a', Register.VB), // write to VD value 0x23
@@ -188,16 +188,58 @@ describe('Chip8', () => {
     });
 
     describe('8XY7: Set register VX to the value of VY minus VX', () => {
-      it('sets VC to value VD minus VC', () => {
+      it('sets VC(Vx) to value VD(Vy) minus VC(Vx)', () => {
         const program = [
-          writeValueToRegister('05', Register.VC),
-          writeValueToRegister('0f', Register.VD),
+          writeValueToRegister('03', Register.VC),
+          writeValueToRegister('08', Register.VD),
           '8CD7',
         ];
 
         const vmState = sut.run(program);
 
-        expect(vmState.getRegister(Register.VC)).toEqual(0xa);
+        expect(vmState.getRegister(Register.VC)).toEqual(0x5);
+      });
+
+      it('Set VF to 00 if a borrow occurs', () => {
+        const program = [
+          writeValueToRegister('01', Register.VF),
+          writeValueToRegister('05', Register.VA),
+          writeValueToRegister('0a', Register.VB),
+          '8BA7',
+        ];
+
+        const vmState = sut.run(program);
+
+        expect(vmState.getRegister(Register.VB)).toEqual(0x5);
+        expect(vmState.getRegister(Register.VF)).toEqual(0x0);
+      });
+
+      it('Set VF to 01 if a borrow does not occur', () => {
+        const program = [
+          writeValueToRegister('00', Register.VF),
+          writeValueToRegister('03', Register.VA),
+          writeValueToRegister('03', Register.VB),
+          '8BA7',
+        ];
+
+        const vmState = sut.run(program);
+
+        expect(vmState.getRegister(Register.VB)).toEqual(0x0);
+        expect(vmState.getRegister(Register.VF)).toEqual(0x1);
+      });
+    });
+
+    describe('8XY2: Set VX to VX AND VY', () => {
+      it('sets V1(Vx) to V1(Vx) AND V3(Vy)', () => {
+        const program = [
+          writeValueToRegister('0e', Register.V1),
+          writeValueToRegister('04', Register.V3),
+          '8132',
+        ];
+
+        const vmState = sut.run(program);
+
+        expect(vmState.getRegister(Register.V1)).toEqual(0x4);
       });
     });
   });
